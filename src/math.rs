@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vector {
@@ -22,6 +22,15 @@ impl Vector {
             y: (v1.z * v2.x) - (v1.x * v2.z),
             z: (v1.x * v2.y) - (v1.y * v2.x),
         }
+    }
+
+    pub fn normalize(self) -> Vector {
+        let magnitude = self.magnitude();
+        self / magnitude
+    }
+
+    pub fn magnitude(self) -> f32 {
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 }
 
@@ -49,16 +58,58 @@ impl Sub for Vector {
     }
 }
 
+impl Mul<f32> for Vector {
+    type Output = Vector;
+
+    fn mul(self, scalar: f32) -> Vector {
+        Vector {
+            x: self.x * scalar,
+            y: self.y * scalar,
+            z: self.z * scalar,
+        }
+    }
+}
+
+impl Div<f32> for Vector {
+    type Output = Vector;
+
+    fn div(self, scalar: f32) -> Vector {
+        Vector {
+            x: self.x / scalar,
+            y: self.y / scalar,
+            z: self.z / scalar,
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn sum_of_vectors() {
+    fn sum_of_vectors_test() {
         let v1 = Vector::new(3.0, 2.0, 1.0);
         let v2 = Vector::new(7.0, 4.0, 3.0);
         assert_eq!(v1 + v2, Vector::new(10.0, 6.0, 4.0));
+    }
+
+    #[test]
+    fn subtraction_of_vectors_test() {
+        let v1 = Vector::new(3.0, 2.0, 1.0);
+        let v2 = Vector::new(7.0, 4.0, 3.0);
+        assert_eq!(v1 - v2, Vector::new(-4.0, -2.0, -2.0));
+    }
+
+    #[test]
+    fn multiplication_vector_by_scalar_test() {
+        let v1 = Vector::new(3.0, 2.0, 1.0);
+        assert_eq!(v1 * 3.0, Vector::new(9.0, 6.0, 3.0));
+    }
+
+    #[test]
+    fn division_vector_by_scalar_test() {
+        let v1 = Vector::new(3.0, 2.0, 1.0);
+        assert_eq!(v1 / 2.0, Vector::new(1.5, 1.0, 0.5));
     }
 
     #[test]
@@ -73,5 +124,17 @@ mod tests {
         let v1 = Vector::new(3.0, 2.0, 1.0);
         let v2 = Vector::new(7.0, 4.0, 3.0);
         assert_eq!(Vector::cross_product(v1, v2), Vector::new(2.0, -2.0, -2.0));
+    }
+
+    #[test]
+    fn normalization_of_vector_test() {
+        let v1 = Vector::new(2.0, 0.0, 0.0);
+        assert_eq!(v1.normalize(), Vector::new(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn magnitude_of_vector() {
+        let v1 = Vector::new(2.0, 2.0, 1.0);
+        assert_eq!(v1.magnitude(), 3.0);
     }
 }
