@@ -16,7 +16,7 @@ impl Image {
         }
     }
 
-    pub fn printPixel(&self, x: usize, y: usize) {
+    pub fn print_pixel(&self, x: usize, y: usize) {
         println!(
             "{} {} {}",
             self.pixelmap[y][x][0], self.pixelmap[y][x][1], self.pixelmap[y][x][2]
