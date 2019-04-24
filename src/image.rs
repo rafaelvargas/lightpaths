@@ -1,26 +1,20 @@
 use std::fs::File;
 use std::io::prelude::*;
+use std::ops::{Index, IndexMut};
 
 pub struct Image {
-    height: u8,
-    width: u8,
+    height: usize,
+    width: usize,
     pixelmap: Vec<Vec<Vec<u8>>>,
 }
 
 impl Image {
     pub fn new(height: usize, width: usize) -> Image {
         Image {
-            height: height as u8,
-            width: width as u8,
+            height: height,
+            width: width,
             pixelmap: vec![vec![vec![0; 3]; width]; height],
         }
-    }
-
-    pub fn print_pixel(&self, x: usize, y: usize) {
-        println!(
-            "{} {} {}",
-            self.pixelmap[y][x][0], self.pixelmap[y][x][1], self.pixelmap[y][x][2]
-        );
     }
 
     pub fn write(&self, filepath: &str) -> std::io::Result<()> {
@@ -40,5 +34,41 @@ impl Image {
             }
         }
         Ok(())
+    }
+
+    pub fn get_height(&self) -> usize {
+        self.height
+    }
+
+    pub fn get_width(&self) -> usize {
+        self.width
+    }
+}
+
+impl Index<usize> for Image {
+    type Output = Vec<Vec<u8>>;
+
+    fn index(&self, i: usize) -> &Vec<Vec<u8>> {
+        &self.pixelmap[i]
+    }
+}
+
+impl IndexMut<usize> for Image {
+    fn index_mut(&mut self, i: usize) -> &mut Vec<Vec<u8>> {
+        &mut self.pixelmap[i]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn pixel_color_assignment() {
+        let mut image = Image::new(2, 2);
+        image[0][0][0] = 255;
+        image[0][0][1] = 127;
+        image[0][0][2] = 10;
+        assert_eq!(image[0][0], [255, 127, 10])
     }
 }
