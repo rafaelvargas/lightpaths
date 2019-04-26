@@ -25,6 +25,18 @@ impl Color {
     pub fn new(r: f32, g: f32, b: f32) -> Color {
         Color { r: r, g: g, b: b }
     }
+
+    pub fn clamp(&mut self) {
+        if self.r > 1.0 {
+            self.r = 1.0;
+        }
+        if self.g > 1.0 {
+            self.g = 1.0;
+        }
+        if self.b > 1.0 {
+            self.b = 1.0;
+        }
+    }
 }
 
 impl Add for Color {

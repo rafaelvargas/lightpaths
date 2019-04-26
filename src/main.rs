@@ -39,8 +39,9 @@ fn main() {
     let objects: Vec<Box<object::Object>> = vec![Box::new(green_sphere), Box::new(red_sphere)];
 
     // Creating lights
-    let light = light::Light::new(math::Vector::new(0.0, 0.3, 0.4), 1.0);
-    let lights: Vec<light::Light> = vec![light];
+    let top_light = light::Light::new(math::Vector::new(0.0, 0.9, 0.4), 0.8);
+    let bottom_light = light::Light::new(math::Vector::new(0.0, -0.9, -0.4), 0.8);
+    let lights: Vec<light::Light> = vec![top_light, bottom_light];
 
     // Creating scene
     let scene = scene::Scene::new(lights, objects);
@@ -52,7 +53,10 @@ fn main() {
     let rendering_result = renderer.render();
     match time_now.elapsed() {
         Ok(elapsed) => {
-            println!("Elapsed time during rendering: {} seconds", elapsed.as_secs());
+            println!(
+                "Elapsed time during rendering: {} seconds",
+                elapsed.as_secs()
+            );
         }
         Err(e) => {
             panic!("Error: {:?}", e);

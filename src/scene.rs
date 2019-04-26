@@ -25,6 +25,7 @@ impl Scene {
                 color += util::Color::new(0.0, 0.0, 0.0);
             }
         }
+        color.clamp();
         return color;
     }
 }
