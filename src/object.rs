@@ -54,7 +54,13 @@ impl Object for Sphere {
         let b = math::Vector::dot_product(oc, ray.direction) * 2.0;
         let c = math::Vector::dot_product(oc, oc) - self.radius.powi(2);
         let discriminant = b * b - a * c * 4.0;
-        return discriminant >= 0.0;
+        let t = (-b - discriminant.sqrt()) / (2.0 * a);
+        let t2 = (-b - discriminant.sqrt()) / (2.0 * a);
+        let mut is_intersected = false;
+        if t > 0.0 && t2 > 0.0 {
+            is_intersected = true;
+        }
+        return is_intersected;
     }
 
     fn get_point_intersected_by(&self, ray: &util::Ray) -> math::Vector {

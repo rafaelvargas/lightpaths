@@ -13,7 +13,7 @@ mod util;
 
 fn main() {
     // Creating camera
-    let position = math::Vector::new(0.0, 0.0, -0.2);
+    let position = math::Vector::new(0.0, 0.0, 0.0);
     let direction = math::Vector::new(0.0, 0.0, 1.0);
     let camera = camera::Camera::new(
         position,
@@ -36,21 +36,27 @@ fn main() {
         math::Vector::new(1.0, 0.65, 0.0),
         math::Vector::new(0.7, 0.7, 0.7),
     );
+    let blue_surface = object::Surface::new(
+        math::Vector::new(0.0, 0.0, 1.0),
+        math::Vector::new(0.4, 0.4, 0.4),
+    );
 
     // Creating objects
-    let red_sphere = object::Sphere::new(math::Vector::new(0.5, 0.0, 1.0), 0.3, red_surface);
-    let green_sphere = object::Sphere::new(math::Vector::new(-0.5, 0.0, 1.0), 0.3, green_surface);
+    let red_sphere = object::Sphere::new(math::Vector::new(0.3, 0.0, 1.0), 0.1, red_surface);
+    let green_sphere = object::Sphere::new(math::Vector::new(-0.3, 0.0, 1.0), 0.1, green_surface);
     let orange_sphere = object::Sphere::new(math::Vector::new(0.0, 0.0, 1.5), 0.4, orange_surface);
+    let blue_sphere = object::Sphere::new(math::Vector::new(0.0, -100.4, 1.5), 100.0, blue_surface);
     let objects: Vec<Box<object::Object>> = vec![
         Box::new(green_sphere),
         Box::new(red_sphere),
         Box::new(orange_sphere),
+        Box::new(blue_sphere),
     ];
 
     // Creating lights
-    let top_light = light::Light::new(math::Vector::new(0.0, 0.9, 0.4), 0.8);
-    let bottom_light = light::Light::new(math::Vector::new(0.0, -0.9, -0.4), 0.8);
-    let lights: Vec<light::Light> = vec![top_light, bottom_light];
+    let right_light = light::Light::new(math::Vector::new(-0.8, 0.5, 0.0), 0.8);
+    let left_light = light::Light::new(math::Vector::new(0.8, 0.5, 0.0), 0.8);
+    let lights: Vec<light::Light> = vec![left_light];
 
     // Creating scene
     let scene = scene::Scene::new(lights, objects);
