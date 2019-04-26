@@ -18,7 +18,7 @@ impl Renderer {
 
     pub fn render(&self) -> image::Image {
         let mut rng = rand::thread_rng();
-        let mut image = image::Image::new(360, 640);
+        let mut image = image::Image::new(720, 1280);
 
         for i in 0..image.get_height() {
             for j in 0..image.get_width() {
