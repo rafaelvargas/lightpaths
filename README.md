@@ -1,19 +1,19 @@
 # Lightpaths
 
-## A simple ray-tracer made with Rust
+A simple ray-tracer made with Rust
 
-### Running
+## Running
 When running for the first time, [Cargo](https://doc.rust-lang.org/cargo/guide/) will install all the package dependencies automatically.
 
-#### Optimized
+### Optimized
 ```bash
 cargo run --release
 ```
-#### Debug
+### Debug
 ```bash
 cargo run
 ```
 
-### Rendering samples
+## Rendering samples
 
 ![Spheres with shadows](/images/spheres.jpg)
