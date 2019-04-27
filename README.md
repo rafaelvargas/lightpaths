@@ -13,3 +13,7 @@ cargo run --release
 ```bash
 cargo run
 ```
+
+### Rendering samples
+
+![Spheres with shadows](/images/spheres.jpg)

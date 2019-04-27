@@ -41,8 +41,24 @@ impl Scene {
 
         if has_intersection {
             for light in self.lights.iter() {
-                color +=
-                    self.objects[closest_object_index].compute_color(&closest_point, &ray, &light);
+                let shadow_ray_direction = (light.position - closest_point).normalize();
+                let shadow_ray = util::Ray::new(
+                    closest_point + (shadow_ray_direction * std::f32::EPSILON),
+                    shadow_ray_direction,
+                );
+                let mut is_shadow_ray_intersecting_object = false;
+                for object in self.objects.iter() {
+                    if object.is_intersected_by(&shadow_ray) {
+                        is_shadow_ray_intersecting_object = true;
+                    }
+                }
+                if !is_shadow_ray_intersecting_object {
+                    color += self.objects[closest_object_index].compute_color(
+                        &closest_point,
+                        &ray,
+                        &light,
+                    );
+                }
             }
         } else {
             color = BACKGROUND_COLOR;
