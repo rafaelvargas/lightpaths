@@ -36,15 +36,21 @@ fn main() {
         math::Vector::new(1.0, 0.65, 0.0),
         math::Vector::new(0.7, 0.7, 0.7),
     );
+    let blue_surface = object::Surface::new(
+        math::Vector::new(0.0, 0.0, 1.0),
+        math::Vector::new(0.4, 0.4, 0.4),
+    );
 
     // Creating objects
     let red_sphere = object::Sphere::new(math::Vector::new(0.5, 0.0, 1.0), 0.3, red_surface);
     let green_sphere = object::Sphere::new(math::Vector::new(-0.5, 0.0, 1.0), 0.3, green_surface);
     let orange_sphere = object::Sphere::new(math::Vector::new(0.0, 0.0, 1.5), 0.4, orange_surface);
+    let blue_plane = object::Plane::new(math::Vector::new(0.0, 1.0, 0.0), math::Vector::new(0.0, -1.0, 0.0), blue_surface);
     let objects: Vec<Box<object::Object>> = vec![
         Box::new(green_sphere),
         Box::new(red_sphere),
         Box::new(orange_sphere),
+        Box::new(blue_plane),
     ];
 
     // Creating lights

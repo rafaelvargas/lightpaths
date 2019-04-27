@@ -112,3 +112,78 @@ impl Object for Sphere {
         return color;
     }
 }
+
+pub struct Plane {
+    normal: math::Vector,
+    distance_to_origin: f32,
+    surface: Surface,
+}
+
+impl Plane {
+    pub fn new(normal: math::Vector, point: math::Vector, surface: Surface) -> Plane {
+        Plane {
+            normal: normal,
+            distance_to_origin: -math::Vector::dot_product(point, normal),
+            surface: surface,
+        }
+    }
+}
+
+impl Object for Plane {
+    fn is_intersected_by(&self, ray: &util::Ray) -> bool {
+        let vd = math::Vector::dot_product(self.normal, ray.direction);
+        let vo = math::Vector::dot_product(self.normal, ray.origin);
+        let t = -(vo + self.distance_to_origin) / vd;
+        return t > 0.0;
+    }
+
+    fn get_point_intersected_by(&self, ray: &util::Ray) -> math::Vector {
+        let vd = math::Vector::dot_product(self.normal, ray.direction);
+        let vo = math::Vector::dot_product(self.normal, ray.origin);
+        let t = -(vo + self.distance_to_origin) / vd;
+        let point = ray.origin + ray.direction * t;
+        return point;
+    }
+
+    fn compute_color(
+        &self,
+        point: &math::Vector,
+        ray: &util::Ray,
+        light: &light::Light,
+    ) -> util::Color {
+        let v = -ray.direction;
+        let half_vector = ((light.position - *point).normalize() + v).normalize();
+        let specular = self.surface.specular_constant
+            * light.intensity
+            * math::Vector::dot_product(self.normal, half_vector)
+                .powf(50.0)
+                .max(0.0);
+
+        let diffuse = self.surface.diffuse_constant
+            * light.intensity
+            * math::Vector::dot_product(self.normal, (light.position - *point).normalize())
+                .max(0.0);
+        let illumination = diffuse + specular;
+        let mut color = util::Color::new(0.0, 0.0, 0.0);
+
+        if illumination.x > 1.0 {
+            color.r = 1.0;
+        } else {
+            color.r = illumination.x;
+        }
+
+        if illumination.y > 1.0 {
+            color.g = 1.0;
+        } else {
+            color.g = illumination.y;
+        }
+
+        if illumination.z > 1.0 {
+            color.b = 1.0;
+        } else {
+            color.b = illumination.z;
+        }
+
+        return color;
+    }
+}
