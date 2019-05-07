@@ -2,7 +2,7 @@ use super::{light, math, util};
 
 pub trait Object {
     fn is_intersected_by(&self, ray: &util::Ray) -> bool;
-    fn get_point_intersected_by(&self, ray: &util::Ray) -> math::Vector;
+    fn get_point_intersected_by(&self, ray: &util::Ray) -> Option<math::Vector>;
     fn compute_color(
         &self,
         point: &math::Vector,
@@ -55,7 +55,7 @@ impl Object for Sphere {
         let c = math::Vector::dot_product(oc, oc) - self.radius.powi(2);
         let discriminant = b * b - a * c * 4.0;
         let t = (-b - discriminant.sqrt()) / (2.0 * a);
-        let t2 = (-b - discriminant.sqrt()) / (2.0 * a);
+        let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
         let mut is_intersected = false;
         if t > 0.0 && t2 > 0.0 {
             is_intersected = true;
@@ -63,16 +63,24 @@ impl Object for Sphere {
         return is_intersected;
     }
 
-    fn get_point_intersected_by(&self, ray: &util::Ray) -> math::Vector {
+    fn get_point_intersected_by(&self, ray: &util::Ray) -> Option<math::Vector> {
         let oc = ray.origin - self.center;
         let a = math::Vector::dot_product(ray.direction, ray.direction);
         let b = math::Vector::dot_product(oc, ray.direction) * 2.0;
         let c = math::Vector::dot_product(oc, oc) - self.radius.powi(2);
         let discriminant = b * b - a * c * 4.0;
 
-        let t = (-b - discriminant.sqrt()) / (2.0 * a);
-        let point = ray.origin + ray.direction * t;
-        return point;
+        let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
+        let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
+        let result: Option<math::Vector>;
+        if t1 > 0.0 && t2 > 0.0 {
+            // If both intersection points of the sphere are ahead of the camera
+            let point = ray.origin + ray.direction * t1;
+            result = Some(point);
+        } else {
+            result = None;
+        }
+        return result;
     }
 
     fn compute_color(
@@ -124,12 +132,18 @@ impl Object for Plane {
         return t > 0.0;
     }
 
-    fn get_point_intersected_by(&self, ray: &util::Ray) -> math::Vector {
+    fn get_point_intersected_by(&self, ray: &util::Ray) -> Option<math::Vector> {
         let vd = math::Vector::dot_product(self.normal, ray.direction);
         let vo = math::Vector::dot_product(self.normal, ray.origin);
         let t = -(vo + self.distance_to_origin) / vd;
-        let point = ray.origin + ray.direction * t;
-        return point;
+        let result: Option<math::Vector>;
+        if t > 0.0 {
+            let point = ray.origin + ray.direction * t;
+            result = Some(point);
+        } else {
+            result = None;
+        }
+        return result;
     }
 
     fn compute_color(
