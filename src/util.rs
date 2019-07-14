@@ -16,7 +16,7 @@ impl Ray {
 }
 
 pub struct Color {
-    pub r: f32, // Values must have values between [0.0, 1.0]
+    pub r: f32, // Should have values between [0.0, 1.0]
     pub g: f32,
     pub b: f32,
 }

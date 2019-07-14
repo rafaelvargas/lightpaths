@@ -43,7 +43,7 @@ impl Sphere {
 
     fn compute_normal(&self, point: &math::Vector) -> math::Vector {
         let normal = (*point - self.center) / self.radius;
-        normal
+        return normal
     }
 }
 
@@ -166,7 +166,6 @@ impl Object for Plane {
                 .max(0.0);
         let illumination = diffuse + specular;
         let color = util::Color::new(illumination.x, illumination.y, illumination.z);
-
         return color;
     }
 }
