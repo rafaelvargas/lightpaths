@@ -43,7 +43,7 @@ impl Sphere {
 
     fn compute_normal(&self, point: &math::Vector) -> math::Vector {
         let normal = (*point - self.center) / self.radius;
-        return normal
+        return normal;
     }
 }
 
@@ -167,5 +167,32 @@ impl Object for Plane {
         let illumination = diffuse + specular;
         let color = util::Color::new(illumination.x, illumination.y, illumination.z);
         return color;
+    }
+}
+
+pub struct Triangle {
+    p1: math::Vector,
+    p2: math::Vector,
+    p3: math::Vector,
+    normal: math::Vector,
+    surface: Surface,
+}
+
+impl Triangle {
+    pub fn new(p1: math::Vector, p2: math::Vector, p3: math::Vector, surface: Surface) -> Triangle {
+        /* 
+        The normal of the triangle is defined by the result of the cross-product of two edges of the triangle. 
+        The edges are defined as U and V.
+        */
+        let u = p2 - p1;
+        let v = p3 - p1;
+
+        Triangle {
+            p1: p1,
+            p2: p2,
+            p3: p3,
+            normal: math::Vector::cross_product(u, v),
+            surface: surface,
+        }
     }
 }
