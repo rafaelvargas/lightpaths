@@ -17,3 +17,4 @@ cargo run
 ## Rendering samples
 
 ![Spheres with shadows](/images/spheres.jpg)
+![Pyramid and spheres with two lights](/images/pyramid-and-spheres.jpg)
