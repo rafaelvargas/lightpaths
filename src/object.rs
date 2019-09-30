@@ -171,28 +171,114 @@ impl Object for Plane {
 }
 
 pub struct Triangle {
+    p0: math::Vector,
     p1: math::Vector,
     p2: math::Vector,
-    p3: math::Vector,
-    normal: math::Vector,
+    u: math::Vector,
+    v: math::Vector,
+    pub normal: math::Vector,
     surface: Surface,
 }
 
 impl Triangle {
-    pub fn new(p1: math::Vector, p2: math::Vector, p3: math::Vector, surface: Surface) -> Triangle {
-        /* 
-        The normal of the triangle is defined by the result of the cross-product of two edges of the triangle. 
-        The edges are defined as U and V.
+    pub fn new(p0: math::Vector, p1: math::Vector, p2: math::Vector, surface: Surface) -> Triangle {
+        /*
+        The normal of the triangle is defined by the result of the cross-product of two edges of the triangle.
+        The edges are defined as u and v.
         */
-        let u = p2 - p1;
-        let v = p3 - p1;
+        let u = p1 - p0;
+        let v = p2 - p0;
+        let normal = math::Vector::cross_product(u, v).normalize();
 
         Triangle {
+            p0: p0,
             p1: p1,
             p2: p2,
-            p3: p3,
-            normal: math::Vector::cross_product(u, v),
+            u: u,
+            v: v,
+            normal: normal,
             surface: surface,
         }
+    }
+}
+
+impl Object for Triangle {
+    fn is_intersected_by(&self, ray: &util::Ray) -> bool {
+        // Implements the Möller–Trumbore intersection algorithm
+        let h = math::Vector::cross_product(ray.direction, self.v);
+        let a = math::Vector::dot_product(self.u, h);
+        if a > -std::f32::EPSILON && a < std::f32::EPSILON {
+            return false;
+        }
+        let f = 1.0 / a;
+        let s = (ray.origin - self.p0);
+        let u = f * (math::Vector::dot_product(s, h));
+        // Check if the ray and the triangle are parallel
+        if u < 0.0 || u > 1.0 {
+            return false;
+        }
+        let q = math::Vector::cross_product(s, self.u);
+        let v = f * math::Vector::dot_product(ray.direction, q);
+        if v < 0.0 || (u + v) > 1.0 {
+            return false;
+        }
+        let t = f * math::Vector::dot_product(self.v, q);
+        if t > std::f32::EPSILON {
+            let result = ray.origin + ray.direction * t;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    fn get_point_intersected_by(&self, ray: &util::Ray) -> Option<math::Vector> {
+        // Implements the Möller–Trumbore intersection algorithm
+        let h = math::Vector::cross_product(ray.direction, self.v);
+        let a = math::Vector::dot_product(self.u, h);
+        if a > -std::f32::EPSILON && a < std::f32::EPSILON {
+            return None;
+        }
+        let f = 1.0 / a;
+        let s = (ray.origin - self.p0);
+        let u = f * (math::Vector::dot_product(s, h));
+        // Check if the ray and the triangle are parallel
+        if u < 0.0 || u > 1.0 {
+            return None;
+        }
+        let q = math::Vector::cross_product(s, self.u);
+        let v = f * math::Vector::dot_product(ray.direction, q);
+        if v < 0.0 || (u + v) > 1.0 {
+            return None;
+        }
+        let t = f * math::Vector::dot_product(self.v, q);
+        if t > std::f32::EPSILON {
+            let result = ray.origin + ray.direction * t;
+            return Some(result);
+        } else {
+            return None;
+        }
+    }
+
+    fn compute_color(
+        &self,
+        point: &math::Vector,
+        ray: &util::Ray,
+        light: &light::Light,
+    ) -> util::Color {
+        let v = -ray.direction;
+        let half_vector = ((light.position - *point).normalize() + v).normalize();
+        let specular = self.surface.specular_constant
+            * light.intensity
+            * math::Vector::dot_product(self.normal, half_vector)
+                .powf(50.0)
+                .max(0.0);
+
+        let diffuse = self.surface.diffuse_constant
+            * light.intensity
+            * math::Vector::dot_product(self.normal, (light.position - *point).normalize())
+                .max(0.0);
+        let illumination = diffuse + specular;
+        let color = util::Color::new(illumination.x, illumination.y, illumination.z);
+        return color;
     }
 }
